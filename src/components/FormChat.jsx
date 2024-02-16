@@ -1,26 +1,31 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { socket } from "../socket";
 
-export default function FormChat({ user = 1 }) {
+export default function FormChat() {
   const input = useRef(null);
   const [msg, setMsg] = useState("");
+
+  const user = useSelector((state) => state.user.value);
+  const msgTo = useSelector((state) => state.msgTo.value);
+  const dispatch = useDispatch();
 
   function submit(e) {
     e.preventDefault();
 
     if (msg !== "") {
       const time = new Date().getTime();
-      const data = { from: user, to: 2, msg, date: time };
+      const data = { from: user, to: msgTo, msg, date: time };
 
       socket.emit("send message", data);
 
       setMsg("");
 
-      input.current.disable = true;
+      input.current.disabled = true;
 
       setTimeout(() => {
-        input.current.disable = false;
-        input.current.focus = true;
+        input.current.disabled = false;
+        input.current.focus();
       }, 1000);
     }
   }
